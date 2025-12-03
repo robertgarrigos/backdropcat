@@ -66,4 +66,55 @@ function backdropcat_enable() {
   config_set('filter.format.filtered_html', 'name', $backdropcat_config->get('format.filtered_html.name'));
   config_set('filter.format.full_html', 'name', $backdropcat_config->get('format.full_html.name'));
   config_set('filter.format.plain_text', 'name', $backdropcat_config->get('format.plain_text.name'));
+  
+
+  // translate hero block
+  $site_config = config('system.core');
+  $layout = layout_load('home');
+  foreach ($layout->content as &$block) {
+    if ($block->delta === 'hero') {
+      $block->settings['title'] = t('Welcome to @site-name', array('@site-name' => $site_config->getTranslated('site_name')));
+      break;
+    }
+  }
+  $layout->save();
+
+  config_set('layout.layout.home', 'title', $backdropcat_config->get('layout.home.title'));
+  config_set('layout.layout.home', 'settings.title', $backdropcat_config->get('layout.home.settings.title'));
+  config_set('layout.layout.admin_default', 'title', $backdropcat_config->get('layout.admin_default.title'));
+  config_set('layout.layout.dashboard', 'title', $backdropcat_config->get('layout.dashboard.title'));
+  config_set('layout.layout.dashboard', 'description', $backdropcat_config->get('layout.dashboard.description'));
+  config_set('layout.layout.default', 'title', $backdropcat_config->get('layout.default.title'));
+  
+  // menues
+  // config_set('menu.menu.main-menu', 'title', $backdropcat_config->get('menu.main-menu.title'));
+  // config_set('menu.menu.management', 'title', $backdropcat_config->get('menu.management.title'));
+  // config_set('menu.menu.user-menu', 'title', $backdropcat_config->get('menu.user-menu.title'));
+
+  // Carrega cada menú, actualitza el títol i guarda'l
+  $menus = array(
+    'main-menu' => 'menu.main-menu.title',
+    'management' => 'menu.management.title',
+    'user-menu' => 'menu.user-menu.title',
+  );
+  
+  foreach ($menus as $menu_name => $config_key) {
+    $menu = menu_load($menu_name);
+    if ($menu) {
+      $menu['title'] = $backdropcat_config->get($config_key);
+      menu_save($menu);
+      
+      // Actualitza també el menu_link d'administració
+      $path = 'admin/structure/menu/manage/' . $menu_name;
+      $result = db_query("SELECT mlid FROM {menu_links} WHERE link_path = :path", array(':path' => $path));
+      foreach ($result as $record) {
+        $link = menu_link_load($record->mlid);
+        if ($link) {
+          $link['link_title'] = $menu['title'];
+          menu_link_save($link);
+        }
+      }
+    }
+  }
+
 }

@@ -146,5 +146,34 @@
         "plain_text": {
             "name": "Text net"
         }
+    },
+    "layout": {
+        "home": {
+            "title": "Pàgina inici",
+            "settings": {
+                "title": "Benvigut/da a Backdrop"
+            }
+        },
+        "admin_default": {
+            "title": "Maquetació d'aministració per defecte"
+        },
+        "dashboard": {
+            "title": "Tauler",
+            "description": "Tauler del control general del web"
+        },
+        "default": {
+            "title": "Maquetació per defecte"
+        }
+    },
+    "menu": {
+        "main-menu": {
+            "title": "Menú principal"
+        },
+        "management": {
+            "title": "Menú administració"
+        },
+        "user-menu": {
+            "title": "Menú usuari"
+        }
     }
 }
